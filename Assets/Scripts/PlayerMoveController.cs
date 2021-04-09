@@ -40,9 +40,8 @@ public class PlayerMoveController : MonoBehaviour
         if (enter)
         {
             // This is difficult code, but it will give you the closest car:
-            CarController closestCar = Resources.FindObjectsOfTypeAll<CarController>()
-                .OrderBy((a) => Vector3.Distance(this.transform.position, a.transform.position))
-                .First();
+
+            CarController closestCar = GetClosestCar();
 
             // Get the distance between the car's position and this' (the Human's) position
             float distance = Vector3.Distance(closestCar.transform.position, this.transform.position);
@@ -50,15 +49,8 @@ public class PlayerMoveController : MonoBehaviour
             // Only if the distance is smaller than the threshold...
             if (distance < 2f) // TODO: ALSO CHECK, THAT NOBODY ELSE IS IN THE CAR
             {
-                // Assign the value true
-                // To the CarController-Component
-                // On the car-GameObject
-                CarController carController = closestCar.GetComponent<CarController>();
-                carController.enabled = true;
-                carController.driver = this.gameObject;
-                
-                // And disable this' (the Human's) game object
-                this.gameObject.SetActive(false);
+
+                closestCar.Enter(gameObject);
             }
             
         }
@@ -67,5 +59,11 @@ public class PlayerMoveController : MonoBehaviour
     void Start()
     {
         this.transform.position = Vector3.zero;
+    }
+
+    CarController  GetClosestCar() {
+        return Resources.FindObjectsOfTypeAll<CarController>()
+                 .OrderBy((car) => Vector3.Distance(this.transform.position, car.transform.position))
+                 .First();
     }
 }
